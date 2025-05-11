@@ -1,31 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Real Notification with Vibration</title>
+  <title>Vibration Demo</title>
 </head>
 <body>
-  <button onclick="sendNotification()">Send Notification</button>
+  <h1>Vibrate Example</h1>
+  <button onclick="vibratePhone()">Vibrate!</button>
 
   <script>
-    function sendNotification() {
-      // Request permission for notifications
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          // Show system notification
-          const notification = new Notification('New Message!', {
-            body: 'You have a new alert.',
-            icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png' // optional icon
-          });
-
-          // Trigger vibration (works only on supported mobile devices)
-          if ("vibrate" in navigator) {
-            navigator.vibrate([200, 100, 200]); // vibrate pattern
-          }
-        } else {
-          alert('Notification permission denied.');
-        }
-      });
+    function vibratePhone() {
+      if ("vibrate" in navigator) {
+        // Vibrate for 200ms
+        navigator.vibrate(200);
+      } else {
+        alert("Vibration not supported on this device.");
+      }
     }
   </script>
 </body>
