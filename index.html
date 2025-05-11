@@ -1,21 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Web Notification with Vibration</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notification Example</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index: 9999;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-  <button id="showNotification">Show Notification</button>
+
+  <div class="notification" id="notification">
+    ✅ Your action was successful!
+  </div>
+
   <script>
-  if ('Notification' in window && 'vibrate' in navigator) {
-    document.getElementById('showNotification').addEventListener('click', function() {
-      new Notification('My Notification', {
-        body: 'This notification will vibrate!',
-        vibrate: [200, 500, 200]
-      });
-    });
-  } else {
-    alert('Notification or Vibration API not supported');
-  }
+    const notification = document.getElementById('notification');
+
+    // Show the notification
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 500);
+
+    // Hide the notification after 4 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 4500);
   </script>
 </body>
 </html>
