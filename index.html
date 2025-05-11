@@ -1,156 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Notification Example</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 10px 0;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #status {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .granted {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .denied {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        .default {
-            background-color: #fcf8e3;
-            color: #8a6d3b;
-        }
-    </style>
+<title>Web Notification with Vibration</title>
 </head>
 <body>
-    <h1>Web Notification Demo</h1>
-    
-    <p>This page demonstrates how to implement web notifications with proper permission handling.</p>
-    
-    <button id="permission-btn">Request Notification Permission</button>
-    <button id="notify-btn" disabled>Send Test Notification</button>
-    <button id="vibrate-btn">Vibrate Only</button>
-    
-    <div id="status"></div>
-    
-    <script>
-        // DOM elements
-        const permissionBtn = document.getElementById('permission-btn');
-        const notifyBtn = document.getElementById('notify-btn');
-        const vibrateBtn = document.getElementById('vibrate-btn');
-        const statusDiv = document.getElementById('status');
-        
-        // Check if browser supports notifications
-        if (!('Notification' in window)) {
-            statusDiv.textContent = 'This browser does not support notifications';
-            permissionBtn.disabled = true;
-        } else {
-            // Check the current permission state
-            checkPermissionState();
-        }
-        
-        // Handle permission button click
-        permissionBtn.addEventListener('click', async () => {
-            try {
-                const permission = await Notification.requestPermission();
-                checkPermissionState();
-            } catch (error) {
-                statusDiv.textContent = `Error requesting permission: ${error}`;
-                statusDiv.className = 'denied';
-            }
-        });
-        
-        // Handle notify button click
-        notifyBtn.addEventListener('click', () => {
-            sendNotification('Hello from the Web!', 'This is a test notification from your website.');
-        });
-        
-        // Handle vibrate button click
-        vibrateBtn.addEventListener('click', () => {
-            if ('vibrate' in navigator) {
-                // Vibrate for 500ms
-                navigator.vibrate(500);
-                statusDiv.textContent = 'Vibrating...';
-                setTimeout(() => {
-                    checkPermissionState(); // Reset status message after vibration
-                }, 500);
-            } else {
-                statusDiv.textContent = 'Vibration not supported on this device';
-                statusDiv.className = 'denied';
-            }
-        });
-        
-        // Check and update UI based on current permission state
-        function checkPermissionState() {
-            const permission = Notification.permission;
-            
-            // Update UI based on permission
-            if (permission === 'granted') {
-                statusDiv.textContent = 'Notification permission granted!';
-                statusDiv.className = 'granted';
-                permissionBtn.disabled = true;
-                notifyBtn.disabled = false;
-                
-                // For first-time users, automatically send a welcome notification
-                if (!localStorage.getItem('notificationSent')) {
-                    sendNotification('Welcome!', 'Thank you for enabling notifications.');
-                    localStorage.setItem('notificationSent', 'true');
-                }
-            } else if (permission === 'denied') {
-                statusDiv.textContent = 'Notification permission denied. You need to allow notifications in your browser settings.';
-                statusDiv.className = 'denied';
-                permissionBtn.disabled = true;
-                notifyBtn.disabled = true;
-            } else {
-                statusDiv.textContent = 'Please grant permission to enable notifications.';
-                statusDiv.className = 'default';
-                permissionBtn.disabled = false;
-                notifyBtn.disabled = true;
-            }
-        }
-        
-        // Send a notification with vibration
-        function sendNotification(title, body) {
-            if (Notification.permission === 'granted') {
-                // Try to vibrate if supported
-                if ('vibrate' in navigator) {
-                    // Vibration pattern: 200ms vibrate, 100ms pause, 200ms vibrate
-                    navigator.vibrate([200, 100, 200]);
-                }
-                
-                const notification = new Notification(title, {
-                    body: body,
-                    icon: '/api/placeholder/64/64', // Placeholder icon
-                    vibrate: [200, 100, 200] // Vibration pattern for supported browsers
-                });
-                
-                // Optional: Handle notification click
-                notification.onclick = function() {
-                    window.focus();
-                    notification.close();
-                };
-            }
-        }
-    </script>
+  <button id="showNotification">Show Notification</button>
+  <script>
+  if ('Notification' in window && 'vibrate' in navigator) {
+    document.getElementById('showNotification').addEventListener('click', function() {
+      new Notification('My Notification', {
+        body: 'This notification will vibrate!',
+        vibrate: [200, 500, 200]
+      });
+    });
+  } else {
+    alert('Notification or Vibration API not supported');
+  }
+  </script>
 </body>
 </html>
