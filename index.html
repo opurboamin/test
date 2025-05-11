@@ -1,55 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notification Example</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #4CAF50;
-      color: white;
-      padding: 16px 24px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      opacity: 0;
-      transform: translateY(-20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      z-index: 9999;
-    }
-
-    .notification.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Real Notification with Vibration</title>
 </head>
 <body>
-
-  <div class="notification" id="notification">
-    ✅ Your action was successful!
-  </div>
+  <button onclick="sendNotification()">Send Notification</button>
 
   <script>
-    const notification = document.getElementById('notification');
+    function sendNotification() {
+      // Request permission for notifications
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          // Show system notification
+          const notification = new Notification('New Message!', {
+            body: 'You have a new alert.',
+            icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png' // optional icon
+          });
 
-    // Show the notification
-    setTimeout(() => {
-      notification.classList.add('show');
-    }, 500);
-
-    // Hide the notification after 4 seconds
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 4500);
+          // Trigger vibration (works only on supported mobile devices)
+          if ("vibrate" in navigator) {
+            navigator.vibrate([200, 100, 200]); // vibrate pattern
+          }
+        } else {
+          alert('Notification permission denied.');
+        }
+      });
+    }
   </script>
 </body>
 </html>
