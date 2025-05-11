@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>নোটিফিকেশন ডেমো</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>নোটিফিকেশন ডেমো</h1>
+    <p>এই ওয়েবসাইটটি প্রথমবার ভিজিট করলে নোটিফিকেশন পারমিশন চাইবে</p>
+    <button onclick="sendNotification()">নোটিফিকেশন পাঠান</button>
+
+    <script>
+        // প্রথমবার পারমিশন চেক করার ফাংশন
+        function requestNotificationPermission() {
+            if (!localStorage.getItem('notificationPermissionAsked')) {
+                Notification.requestPermission().then(function(permission) {
+                    localStorage.setItem('notificationPermissionAsked', 'true');
+                    if (permission === 'granted') {
+                        showNotification('স্বাগতম!', 'আপনি সফলভাবে নোটিফিকেশন অনুমোদন করেছেন।');
+                    }
+                });
+            }
+        }
+
+        // নোটিফিকেশন পাঠানোর ফাংশন
+        function sendNotification() {
+            if (Notification.permission === 'granted') {
+                showNotification('হ্যালো!', 'এই একটি টেস্ট নোটিফিকেশন।');
+            } else {
+                alert('দুঃখিত, নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
+            }
+        }
+
+        // নোটিফিকেশন দেখানোর ফাংশন
+        function showNotification(title, message) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: message,
+                    icon: 'https://i.imgur.com/JQ9pRoD.png' // আপনার আইকন URL
+                });
+            }
+        }
+
+        // পেজ লোড হলে ফাংশন কল করি
+        window.onload = function() {
+            requestNotificationPermission();
+        };
+    </script>
+</body>
+</html>
