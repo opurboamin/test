@@ -1,68 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>নোটিফিকেশন ডেমো</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Notification Example</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 10px 15px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            margin: 10px 0;
         }
         button:hover {
             background-color: #45a049;
         }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .granted {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .denied {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .default {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
     </style>
 </head>
 <body>
-    <h1>নোটিফিকেশন ডেমো</h1>
-    <p>এই ওয়েবসাইটটি প্রথমবার ভিজিট করলে নোটিফিকেশন পারমিশন চাইবে</p>
-    <button onclick="sendNotification()">নোটিফিকেশন পাঠান</button>
-
+    <h1>Web Notification Demo</h1>
+    
+    <p>This page demonstrates how to implement web notifications with proper permission handling.</p>
+    
+    <button id="permission-btn">Request Notification Permission</button>
+    <button id="notify-btn" disabled>Send Test Notification</button>
+    
+    <div id="status"></div>
+    
     <script>
-        // প্রথমবার পারমিশন চেক করার ফাংশন
-        function requestNotificationPermission() {
-            if (!localStorage.getItem('notificationPermissionAsked')) {
-                Notification.requestPermission().then(function(permission) {
-                    localStorage.setItem('notificationPermissionAsked', 'true');
-                    if (permission === 'granted') {
-                        showNotification('স্বাগতম!', 'আপনি সফলভাবে নোটিফিকেশন অনুমোদন করেছেন।');
-                    }
-                });
-            }
+        // DOM elements
+        const permissionBtn = document.getElementById('permission-btn');
+        const notifyBtn = document.getElementById('notify-btn');
+        const statusDiv = document.getElementById('status');
+        
+        // Check if browser supports notifications
+        if (!('Notification' in window)) {
+            statusDiv.textContent = 'This browser does not support notifications';
+            permissionBtn.disabled = true;
+        } else {
+            // Check the current permission state
+            checkPermissionState();
         }
-
-        // নোটিফিকেশন পাঠানোর ফাংশন
-        function sendNotification() {
-            if (Notification.permission === 'granted') {
-                showNotification('হ্যালো!', 'এই একটি টেস্ট নোটিফিকেশন।');
+        
+        // Handle permission button click
+        permissionBtn.addEventListener('click', async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                checkPermissionState();
+            } catch (error) {
+                statusDiv.textContent = `Error requesting permission: ${error}`;
+                statusDiv.className = 'denied';
+            }
+        });
+        
+        // Handle notify button click
+        notifyBtn.addEventListener('click', () => {
+            sendNotification('Hello from the Web!', 'This is a test notification from your website.');
+        });
+        
+        // Check and update UI based on current permission state
+        function checkPermissionState() {
+            const permission = Notification.permission;
+            
+            // Update UI based on permission
+            if (permission === 'granted') {
+                statusDiv.textContent = 'Notification permission granted!';
+                statusDiv.className = 'granted';
+                permissionBtn.disabled = true;
+                notifyBtn.disabled = false;
+                
+                // For first-time users, automatically send a welcome notification
+                if (!localStorage.getItem('notificationSent')) {
+                    sendNotification('Welcome!', 'Thank you for enabling notifications.');
+                    localStorage.setItem('notificationSent', 'true');
+                }
+            } else if (permission === 'denied') {
+                statusDiv.textContent = 'Notification permission denied. You need to allow notifications in your browser settings.';
+                statusDiv.className = 'denied';
+                permissionBtn.disabled = true;
+                notifyBtn.disabled = true;
             } else {
-                alert('দুঃখিত, নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
+                statusDiv.textContent = 'Please grant permission to enable notifications.';
+                statusDiv.className = 'default';
+                permissionBtn.disabled = false;
+                notifyBtn.disabled = true;
             }
         }
-
-        // নোটিফিকেশন দেখানোর ফাংশন
-        function showNotification(title, message) {
+        
+        // Send a notification
+        function sendNotification(title, body) {
             if (Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: message,
-                    icon: 'https://i.imgur.com/JQ9pRoD.png' // আপনার আইকন URL
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: '/api/placeholder/64/64' // Placeholder icon
                 });
+                
+                // Optional: Handle notification click
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                };
             }
         }
-
-        // পেজ লোড হলে ফাংশন কল করি
-        window.onload = function() {
-            requestNotificationPermission();
-        };
     </script>
 </body>
 </html>
