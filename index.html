@@ -49,6 +49,7 @@
     
     <button id="permission-btn">Request Notification Permission</button>
     <button id="notify-btn" disabled>Send Test Notification</button>
+    <button id="vibrate-btn">Vibrate Only</button>
     
     <div id="status"></div>
     
@@ -56,6 +57,7 @@
         // DOM elements
         const permissionBtn = document.getElementById('permission-btn');
         const notifyBtn = document.getElementById('notify-btn');
+        const vibrateBtn = document.getElementById('vibrate-btn');
         const statusDiv = document.getElementById('status');
         
         // Check if browser supports notifications
@@ -81,6 +83,21 @@
         // Handle notify button click
         notifyBtn.addEventListener('click', () => {
             sendNotification('Hello from the Web!', 'This is a test notification from your website.');
+        });
+        
+        // Handle vibrate button click
+        vibrateBtn.addEventListener('click', () => {
+            if ('vibrate' in navigator) {
+                // Vibrate for 500ms
+                navigator.vibrate(500);
+                statusDiv.textContent = 'Vibrating...';
+                setTimeout(() => {
+                    checkPermissionState(); // Reset status message after vibration
+                }, 500);
+            } else {
+                statusDiv.textContent = 'Vibration not supported on this device';
+                statusDiv.className = 'denied';
+            }
         });
         
         // Check and update UI based on current permission state
@@ -112,12 +129,19 @@
             }
         }
         
-        // Send a notification
+        // Send a notification with vibration
         function sendNotification(title, body) {
             if (Notification.permission === 'granted') {
+                // Try to vibrate if supported
+                if ('vibrate' in navigator) {
+                    // Vibration pattern: 200ms vibrate, 100ms pause, 200ms vibrate
+                    navigator.vibrate([200, 100, 200]);
+                }
+                
                 const notification = new Notification(title, {
                     body: body,
-                    icon: '/api/placeholder/64/64' // Placeholder icon
+                    icon: '/api/placeholder/64/64', // Placeholder icon
+                    vibrate: [200, 100, 200] // Vibration pattern for supported browsers
                 });
                 
                 // Optional: Handle notification click
