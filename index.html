@@ -11,7 +11,7 @@
     function vibratePhone() {
       if ("vibrate" in navigator) {
         // Vibrate for 200ms
-        navigator.vibrate(200, 100, 200,100, 200,100,200, 100);
+        navigator.vibrate([200, 100, 200,100, 200,100,200, 100]);
       } else {
         alert("Vibration not supported on this device.");
       }
